@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ city }} - Disease Map</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+    }
+
+    #map {
+      height: 400px;
+      width: 80%;
+      margin: 20px auto;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Health Status for {{ city }}</h1>
+  <p><strong>Status:</strong>
+    <span style="color:
+      {% if status == 'Safe' %}green
+      {% elif status == 'Moderate' %}orange
+      {% elif status == 'Alert' %}red
+      {% else %}black{% endif %}
+    ">
+      {{ status }}
+    </span>
+  </p>
+
+  <div id="map"></div>
+
+  <a href="/" style="margin-top: 20px; display: inline-block;">🔙 Back to Search</a>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const lat = {{ lat }};
+    const lon = {{ lon }};
+    const status = "{{ status }}";
+
+    // Determine color based on status
+    let markerColor;
+    if (status === 'Safe') markerColor = 'green';
+    else if (status === 'Moderate') markerColor = 'orange';
+    else if (status === 'Alert') markerColor = 'red';
+    else markerColor = 'blue';
+
+    // Create the map
+    const map = L.map('map').setView([lat, lon], 10);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Create a colored circle marker
+    L.circleMarker([lat, lon], {
+      radius: 10,
+      color: markerColor,
+      fillColor: markerColor,
+      fillOpacity: 0.8
+    }).addTo(map).bindPopup(`{{ city }}: ${status}`);
+  </script>
+</body>
+</html>
